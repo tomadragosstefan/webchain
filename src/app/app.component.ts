@@ -41,6 +41,7 @@ export class AppComponent implements OnInit{
 
         this.countries = Array.from(countries) as string[];
         this.countries.sort();
+        this.countries.unshift("");
       }
     );
   }
