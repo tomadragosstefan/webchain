@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService } from './data.service';
 import { University } from './university.interface';
+import { Observable, map } from 'rxjs';
 
 
 @Component({
@@ -11,7 +12,9 @@ import { University } from './university.interface';
 export class AppComponent implements OnInit{
 
   title = 'webchain';
-  universities: University[] = [];
+  universities$: Observable<University[]> = new Observable();
+  countries$: Observable<string[]> = new Observable();
+
   countries : string[] = [];
 
   nameFilter = "";
@@ -20,30 +23,22 @@ export class AppComponent implements OnInit{
   constructor(private data: DataService){}
 
   filterTable(){
-    this.data.getUniversities(this.nameFilter, this.countryFilter).subscribe(universities =>{
-      this.universities =  universities;
-    });
+    this.universities$ = this.data.getUniversities(this.nameFilter, this.countryFilter);
   }
 
   ngOnInit(): void {
-    let countries:string[] = [];
+    this.universities$ = this.data.getUniversities(this.nameFilter, this.countryFilter);
 
-    this.data.getUniversities("","").subscribe(
-      universities=>{
-
-        this.universities =  universities;
-        
-        let countries = new Set();
-
-        this.universities.forEach(university=>{
-          countries.add(university.country);
-        })
-
-        this.countries = Array.from(countries) as string[];
-        this.countries.sort();
-        this.countries.unshift("");
+    this.countries$ = this.universities$.pipe(map(university => 
+      {
+        const scrambledCountries = university.map(university => university.country);
+        const setCountries = new Set(scrambledCountries);
+        const countries = Array.from(setCountries);
+        countries.sort();
+        countries.unshift("");
+        return countries;
       }
-    );
+    ));
   }
 
 }

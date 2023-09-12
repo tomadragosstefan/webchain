@@ -1,7 +1,7 @@
 <input type="text"  [(ngModel)]="nameFilter" (ngModelChange)="filterTable()">
 
 <select name="" id="" [(ngModel)]="countryFilter" (ngModelChange)="filterTable()">
-  <ng-container *ngFor="let country of countries">
+  <ng-container *ngFor="let country of countries$ | async">
     <option [value]="country" >{{country}}</option>
   </ng-container>
   
@@ -14,7 +14,7 @@
     <th>Domains</th>
   </thead>
   <tbody>
-    <tr *ngFor="let university of universities">
+    <tr *ngFor="let university of universities$ |async">
       <td>{{university.name}}</td>
       <td>{{university.country}}</td>
       <td>
